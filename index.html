@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Charts Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            margin-top: 20px;
+        }
+        #chartSelector {
+            margin-bottom: 20px;
+        }
+        canvas {
+            height: 400px;
+        }
+        .chart-container canvas {
+            display: none;
+        }
+        .chart-container .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Interactive Charts Dashboard</h1>
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <select id="chartSelector" class="form-select">
+                    <option value="line">Line Chart</option>
+                    <option value="bar">Bar Chart</option>
+                    <option value="pie">Pie Chart</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="lineChart"></canvas>
+            <canvas id="barChart"></canvas>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data for the charts
+        const data = {
+            labels: ['Brain Station 23', 'DataSoft Systems', 'Mediacom Ltd.', 'JoomShaper', 'Zaman IT', 'WebAble', 'Sajeeb Group', 'TechnoVista Ltd.', 'Krishna Group', 'ConnectBD'],
+            datasets: {
+                line: [
+                    {
+                        label: 'General Web Developer',
+                        data: [30000, 25000, 22000, 20000, 25000, 22000, 25000, 27000, 22000, 20000],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)'
+                    },
+                    {
+                        label: 'Laravel Developer',
+                        data: [35000, 30000, 27000, 25000, 30000, 27000, 30000, 32000, 27000, 25000],
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)'
+                    },
+                    {
+                        label: 'React/Vue.js Developer',
+                        data: [40000, 35000, 32000, 30000, 35000, 32000, 35000, 35000, 32000, 30000],
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)'
+                    }
+                ],
+                bar: [
+                    {
+                        label: 'Average Salary (BDT)',
+                        data: [27500, 32000, 40000],
+                        backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                        borderWidth: 1
+                    }
+                ],
+                pie: [
+                    {
+                        data: [27500, 32000, 40000],
+                        backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)']
+                    }
+                ]
+            }
+        };
+
+        // Chart configuration
+        const config = {
+            line: {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: data.datasets.line
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': BDT ' + context.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            bar: {
+                type: 'bar',
+                data: {
+                    labels: ['General Web Developer', 'Laravel Developer', 'React/Vue.js Developer'],
+                    datasets: data.datasets.bar
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': BDT ' + context.raw;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            },
+            pie: {
+                type: 'pie',
+                data: {
+                    labels: ['General Web Developer', 'Laravel Developer', 'React/Vue.js Developer'],
+                    datasets: data.datasets.pie
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': BDT ' + context.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // Initialize the charts
+        const lineChart = new Chart(document.getElementById('lineChart').getContext('2d'), config.line);
+        const barChart = new Chart(document.getElementById('barChart').getContext('2d'), config.bar);
+        const pieChart = new Chart(document.getElementById('pieChart').getContext('2d'), config.pie);
+
+        // Function to show the selected chart
+        function showChart(chartType) {
+            document.getElementById('lineChart').classList.remove('active');
+            document.getElementById('barChart').classList.remove('active');
+            document.getElementById('pieChart').classList.remove('active');
+            
+            if (chartType === 'line') {
+                document.getElementById('lineChart').classList.add('active');
+            } else if (chartType === 'bar') {
+                document.getElementById('barChart').classList.add('active');
+            } else if (chartType === 'pie') {
+                document.getElementById('pieChart').classList.add('active');
+            }
+        }
+
+        // Event listener for chart selection
+        document.getElementById('chartSelector').addEventListener('change', function() {
+            showChart(this.value);
+        });
+
+        // Set default chart
+        showChart('line');
+    </script>
+</body>
+</html>
